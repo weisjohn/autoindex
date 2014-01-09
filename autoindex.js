@@ -1,9 +1,12 @@
 
 // parse an autoindex page into JSON
 
-// TODO: make jQuery optional
-
 (function() {
+
+    var root = this;
+
+    function isDir(str) { return /alt\=\"\[DIR\]\"/.test(str); }
+    function isParent(str) { return /Parent Directory/.test(str); }
 
     function autoindex(url, opts, cb) {
 
@@ -12,42 +15,39 @@
         var root = url.match(/^(.*\/\/[^\/?#]*).*$/)[1];
         if (typeof opts === "function") cb = opts, opts = {};
 
-
-        // helper functions
-        // TODO: turn into an object
+        // grab info out of a line
         function objectify(str, should_console) {
 
             var obj = {};
             // find the href of the file
-            obj.href = str.match(/href\=\"([^\"]*)\"/)[1];
+            obj.href = str.match(/href\=\"([^\"]*)\"/m)[1];
             obj.url = (isDir(str) ? (root + "/") : url) + obj.href;
 
             // find the file name (preserve truncation)
             obj.name = str.match(/<a href\=\"(?:[^\"]*)\">(.+)<\/a>/)[1];
+            obj.type = str.match(/alt\=\"\[(.*)\]\"/)[1].toLowerCase();
             
-            // TODO: parse out the bytes
-            // obj.bytes = str.match('/')
+            // parent directory don't have a modified time
+            if (!isParent(str)) obj.modified = "TODO";
 
-            if (should_console) console.log(str);
+            // directories don't have size
+            if (!isDir(str)) obj.size = str.match(/\>( *\d*\.*\d*[BKMGT])\</)[1].trim();
 
             return obj;
         }
 
-        function isDir(str) {
-            return /alt\=\"\[DIR\]\"/.test(str);
+        // generic type sorter
+        function winnow(rows, parent, dir) {
+            return rows.filter(function(row) {
+                return (parent == isParent(row)) && (dir == isDir(row));
+            }).map(function(row) {
+                return objectify(row);
+            });
         }
-
-        function isParent(str) {
-            return /Parent Directory/.test(str);
-        }
-
 
         function parser(opts, cb) {
             return function(page) {
                 if (typeof page === "undefined") return cb("No page");
-
-                // TODO: nix the next line
-                window.p = page;
 
                 // TODO: nix the whole rows then items thing, and just grab rows
                 var rows = page.match(/<tr>(.+)<\/tr>/g);
@@ -55,38 +55,65 @@
                     return /<td>(.+)<\/td>/.test(row);
                 });
 
-                var parent = items.filter(function(item) {
-                    return isDir(item) && isParent(item);
-                });
-                parent = (parent.length) ? objectify(parent[0]) : null;
+                // discover if there's a parent or not
+                var parent = winnow(items, true, true);
+                parent = (parent.length) ? parent[0] : null;
 
-                var dirs = items.filter(function(item) {
-                    return isDir(item) && !isParent(item);
-                });
-                if (dirs.length) dirs = dirs.map(function(dir) { return objectify(dir) });
+                var files = winnow(items, false, false);
 
-                var files = items.filter(function(item) {
-                    return !isDir(item) && !isParent(item);
+                // TODO: filter only a type
+                if (opts.type) files = files.filter(function(file) {
+                    return file.type === opts.type;
                 });
-                if (files.length) files = files.map(function(dir) { return objectify(dir, true) });
 
                 cb(null, {
                     root: !parent,
                     parent: parent,
-                    directories: dirs,
+                    directories: winnow(items, false, true),
                     files: files
                 });
 
             }
         }
 
-        // TODO: try to support something other than jQuery?
-        $.ajax(url).then(parser(opts, cb), function(j, t, e) {
-            cb(e);
-        });
+        // use jQuery if you can, if not, XHR, or try to node
+        if (typeof $ !== "undefined" && !!$().jquery) {
+            $.ajax(url).then(parser(opts, cb), function(j, t, e) {
+                cb(e);
+            });
+        } else if (typeof XMLHttpRequest !== "undefined") {
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function() { if (xhr.response) parser(opts, cb)(xhr.response); }
+            xhr.onerror = function(e) { cb(e); }
+            xhr.open('get', url, true);
+            xhr.send();
+        } else if (typeof module !== "undefined" && typeof require !== "undefined") {
+            // module exploration based on protocol, reckless
+            var mod = url.split('://')[0];
+            var protocol = require(mod);
+            protocol.get(url, function(res) {
+                var response = "";
+                res.on('data', function(d) { response += d; });
+                res.on('end', function(d) {
+                    response += d;
+                    if (response) parser(opts, cb)(response);
+                });
+            }).on('error', cb);
+        }
     }
 
-    // TODO: the whole module.exports / require thing
-    window.autoindex = autoindex;
+    // shamelessly stolen from https://github.com/caolan/async/blob/master/lib/async.js
+    // AMD / RequireJS
+    if (typeof define !== 'undefined' && define.amd) {
+        define([], function () {
+            return autoindex;
+        });
+    } else if (typeof module !== 'undefined' && module.exports) {
+        // Node.js
+        module.exports = autoindex;
+    } else {
+        // included directly via <script> tag
+        root.autoindex = autoindex;
+    }
 
 })();
