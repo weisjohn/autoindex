@@ -1,0 +1,25 @@
+{
+  "name": "autoindex",
+  "version": "0.1.0",
+  "description": "parse an autoindex page into JSON",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/weisjohn/autoindex.git"
+  },
+  "keywords": [
+    "autoindex",
+    "parse",
+    "directory",
+    "listing"
+  ],
+  "author": "John Weis <weis.john@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/weisjohn/autoindex/issues"
+  },
+  "homepage": "https://github.com/weisjohn/autoindex"
+}
