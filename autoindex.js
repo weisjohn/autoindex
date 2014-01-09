@@ -28,7 +28,8 @@
             obj.type = str.match(/alt\=\"\[(.*)\]\"/)[1].toLowerCase();
             
             // parent directory don't have a modified time
-            if (!isParent(str)) obj.modified = "TODO";
+            if (!isParent(str)) obj.modified = str.match(/\>(\d{2}-\w*-\d{4} \d{2}\:\d{2})/)[1];
+            if (obj.modified) obj.modified = new Date(obj.modified);
 
             // directories don't have size
             if (!isDir(str)) obj.size = str.match(/\>( *\d*\.*\d*[BKMGT])\</)[1].trim();
