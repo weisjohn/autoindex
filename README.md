@@ -58,6 +58,8 @@ var autoindex = require('autoindex');
 
 ### client-side 
 
+`bower install autoindex` or download the [index.js](index.js) file.
+
 autoindex works with or without jQuery. If you need legacy browser support, make sure to add jQuery to your page. To use autoindex, simply add it to your page via a &lt;script&gt; tag or use RequireJS.
 
 **NOTE**: If you wish to use this in the browser, [enable CORS](http://enable-cors.org) on that site.
