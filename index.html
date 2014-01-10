@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Autoindex by weisjohn</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Autoindex</h1>
+        <p>parse an autoindex page into JSON (client or server-side)</p>
+
+        <p class="view"><a href="https://github.com/weisjohn/autoindex">View the Project on GitHub <small>weisjohn/autoindex</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/weisjohn/autoindex/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/weisjohn/autoindex/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/weisjohn/autoindex">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="autoindex" class="anchor" href="#autoindex"><span class="octicon octicon-link"></span></a>autoindex</h1>
+
+<p>parse an autoindex page into JSON (client or server-side)</p>
+
+<p>Ever wanted to take an <a href="http://i.johnweis.com/gifs/" title="Something like this">autoindex page</a> use that data programmatically? Now you can.</p>
+
+<h3>
+<a name="example" class="anchor" href="#example"><span class="octicon octicon-link"></span></a>example:</h3>
+
+<pre><code>autoindex('http://i.johnweis.com/gifs/', function(err, results) {
+    console.log(results);
+})
+</code></pre>
+
+<p>output: </p>
+
+<pre><code>root false
+parent { href: '/',
+  url: 'http://i.johnweis.com//',
+  name: 'Parent Directory',
+  type: 'dir' }
+directories [ { href: 'sample/',
+    url: 'http://i.johnweis.com/sample/',
+    name: 'sample/',
+    type: 'dir',
+    modified: Thu Jan 09 2014 22:24:00 GMT-0500 (EST) } ]
+files [ { href: 'balance.gif',
+    url: 'http://i.johnweis.com/gifs/balance.gif',
+    name: 'balance.gif',
+    type: 'img',
+    modified: Thu Jan 09 2014 22:17:00 GMT-0500 (EST),
+    size: '1.0M' },
+  { href: 'lemon.gif',
+    url: 'http://i.johnweis.com/gifs/lemon.gif',
+    name: 'lemon.gif',
+    type: 'img',
+    modified: Thu Jan 09 2014 22:16:00 GMT-0500 (EST),
+    size: '1.1M' },
+  { href: 'yes.gif',
+    url: 'http://i.johnweis.com/gifs/yes.gif',
+    name: 'yes.gif',
+    type: 'img',
+    modified: Thu Jan 09 2014 22:16:00 GMT-0500 (EST),
+    size: '473K' } ]
+</code></pre>
+
+<h3>
+<a name="server-side" class="anchor" href="#server-side"><span class="octicon octicon-link"></span></a>server-side</h3>
+
+<p><code>npm install autoindex</code> then: </p>
+
+<pre><code>var autoindex = require('autoindex');
+</code></pre>
+
+<h3>
+<a name="client-side" class="anchor" href="#client-side"><span class="octicon octicon-link"></span></a>client-side</h3>
+
+<p>autoindex works with or without jQuery. If you need legacy browser support, make sure to add jQuery to your page. To use autoindex, simply add it to your page via a &lt;script&gt; tag or use RequireJS.</p>
+
+<p><strong>NOTE</strong>: If you wish to use this in the browser, you must <a href="http://enable-cors.org">enable CORS</a> on that site.</p>
+
+<h3>
+<a name="do-no-evil" class="anchor" href="#do-no-evil"><span class="octicon octicon-link"></span></a>do no evil</h3>
+
+<p>If you're going to use this to write webcrawlers, rate-limit yourself.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/weisjohn">weisjohn</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-2950667-4");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
