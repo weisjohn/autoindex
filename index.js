@@ -21,7 +21,7 @@
             var obj = {};
             // find the href of the file
             obj.href = str.match(/href\=\"([^\"]*)\"/m)[1];
-            obj.url = (isDir(str) ? (root + "/") : url) + obj.href;
+            obj.url = (url + obj.href).replace(/([^:])\/\//, "$1\/", "g");
 
             // find the file name (preserve truncation)
             obj.name = str.match(/<a href\=\"(?:[^\"]*)\">(.+)<\/a>/)[1];
@@ -52,6 +52,7 @@
 
                 // TODO: nix the whole rows then items thing, and just grab rows
                 var rows = page.match(/<tr>(.+)<\/tr>/g);
+                if (!rows) return cb("Malformed page, check the page, submit a bug?");
                 var items = rows.filter(function(row) {
                     return /<td>(.+)<\/td>/.test(row);
                 });
