@@ -19,7 +19,7 @@
             var $images = $(".wrap");
             autoindex("http://i.johnweis.com/instagram/", function(err, imgs) {
                 imgs.files.forEach(function(file) {
-                    if (~~(Math.random() * 10) < 6) return;
+                    if (~~(Math.random() * 10) < 7) return;
                     $("<img />").attr('src', file.url).appendTo($images);
                 });
             });
@@ -48,7 +48,7 @@
 
 
 <h3>
-<a name="example" class="anchor" href="#example"><span class="octicon octicon-link"></span></a>example:</h3>
+<a name="example" class="anchor" href="#example"><span class="octicon octicon-link"></span></a>example (refresh for different):</h3>
 
 <pre><code>$(function() {
     var $wrap = $(".wrap");
