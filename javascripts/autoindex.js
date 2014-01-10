@@ -21,7 +21,7 @@
             var obj = {};
             // find the href of the file
             obj.href = str.match(/href\=\"([^\"]*)\"/m)[1];
-            obj.url = (url + obj.href).replace(/([^:])\/\//, "$1\/", "g");
+            obj.url = (url + obj.href).replace(/([^:])\/\//, "$1\/", "g").replace(/&amp;/g, "&");
 
             // find the file name (preserve truncation)
             obj.name = str.match(/<a href\=\"(?:[^\"]*)\">(.+)<\/a>/)[1];
