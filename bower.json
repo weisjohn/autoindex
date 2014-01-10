@@ -1,0 +1,24 @@
+{
+  name: 'autoindex',
+  main: 'index.js',
+  version: '0.1.2',
+  homepage: 'https://github.com/weisjohn/autoindex',
+  authors: [
+    'John Weis <weis.john@gmail.com>'
+  ],
+  description: 'parse an autoindex page into JSON',
+  keywords: [
+    'autoindex',
+    'parse',
+    'directory',
+    'listing'
+  ],
+  license: 'MIT',
+  ignore: [
+    '**/.*',
+    'node_modules',
+    'bower_components',
+    'test',
+    'tests'
+  ]
+}
