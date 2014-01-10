@@ -11,12 +11,29 @@
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script type="text/javascript" src="/javascripts/autoindex.js"></script>
+    <script type="text/javascript">
+
+        $(function() {
+            var $images = $(".wrap");
+            autoindex("http://i.johnweis.com/instagram/", function(err, imgs) {
+                imgs.files.forEach(function(file) {
+                    if (~~(Math.random() * 10) < 6) return;
+                    $("<img />").attr('src', file.url).appendTo($images);
+                });
+            });
+        });
+
+    </script>
   </head>
   <body>
     <div class="wrapper">
       <header>
-        <h1>Autoindex</h1>
+        <h1>autoindex</h1>
         <p>parse an autoindex page into JSON (client or server-side)</p>
+
+        <p>Ever wanted to take an <a href="http://i.johnweis.com/gifs/" title="Something like this">autoindex page</a> use that data programmatically? Now you can.</p>
 
         <p class="view"><a href="https://github.com/weisjohn/autoindex">View the Project on GitHub <small>weisjohn/autoindex</small></a></p>
 
@@ -28,52 +45,23 @@
         </ul>
       </header>
       <section>
-        <h1>
-<a name="autoindex" class="anchor" href="#autoindex"><span class="octicon octicon-link"></span></a>autoindex</h1>
 
-<p>parse an autoindex page into JSON (client or server-side)</p>
-
-<p>Ever wanted to take an <a href="http://i.johnweis.com/gifs/" title="Something like this">autoindex page</a> use that data programmatically? Now you can.</p>
 
 <h3>
 <a name="example" class="anchor" href="#example"><span class="octicon octicon-link"></span></a>example:</h3>
 
-<pre><code>autoindex('http://i.johnweis.com/gifs/', function(err, results) {
-    console.log(results);
-})
+<pre><code>$(function() {
+    var $wrap = $(".wrap");
+    autoindex("http://i.johnweis.com/instagram/", function(e, imgs) {
+        imgs.files.forEach(function(f) {
+            $("&lt;img /&gt;").attr('src', f.url).appendTo($wrap);
+        });
+    });
+});
 </code></pre>
 
-<p>output: </p>
+<div class="wrap"></div>
 
-<pre><code>root false
-parent { href: '/',
-  url: 'http://i.johnweis.com//',
-  name: 'Parent Directory',
-  type: 'dir' }
-directories [ { href: 'sample/',
-    url: 'http://i.johnweis.com/sample/',
-    name: 'sample/',
-    type: 'dir',
-    modified: Thu Jan 09 2014 22:24:00 GMT-0500 (EST) } ]
-files [ { href: 'balance.gif',
-    url: 'http://i.johnweis.com/gifs/balance.gif',
-    name: 'balance.gif',
-    type: 'img',
-    modified: Thu Jan 09 2014 22:17:00 GMT-0500 (EST),
-    size: '1.0M' },
-  { href: 'lemon.gif',
-    url: 'http://i.johnweis.com/gifs/lemon.gif',
-    name: 'lemon.gif',
-    type: 'img',
-    modified: Thu Jan 09 2014 22:16:00 GMT-0500 (EST),
-    size: '1.1M' },
-  { href: 'yes.gif',
-    url: 'http://i.johnweis.com/gifs/yes.gif',
-    name: 'yes.gif',
-    type: 'img',
-    modified: Thu Jan 09 2014 22:16:00 GMT-0500 (EST),
-    size: '473K' } ]
-</code></pre>
 
 <h3>
 <a name="server-side" class="anchor" href="#server-side"><span class="octicon octicon-link"></span></a>server-side</h3>
@@ -88,7 +76,7 @@ files [ { href: 'balance.gif',
 
 <p>autoindex works with or without jQuery. If you need legacy browser support, make sure to add jQuery to your page. To use autoindex, simply add it to your page via a &lt;script&gt; tag or use RequireJS.</p>
 
-<p><strong>NOTE</strong>: If you wish to use this in the browser, you must <a href="http://enable-cors.org">enable CORS</a> on that site.</p>
+<p><strong>NOTE</strong>: If you wish to use this in the browser, <a href="http://enable-cors.org">enable CORS</a> on that site.</p>
 
 <h3>
 <a name="do-no-evil" class="anchor" href="#do-no-evil"><span class="octicon octicon-link"></span></a>do no evil</h3>

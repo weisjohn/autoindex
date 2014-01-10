@@ -2,7 +2,7 @@
 
 body {
   padding:50px;
-  font:14px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font:16px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   color:#777;
   font-weight:300;
 }
@@ -252,4 +252,18 @@ footer {
     font-size:12pt;
     color:#444;
   }
+}
+
+
+.wrap img {
+  opacity: 0.6;
+  width: 160px;
+  height: 160px;
+
+  transition: opacity .25s ease-in-out;
+  -moz-transition: opacity .25s ease-in-out;
+  -webkit-transition: opacity .25s ease-in-out;
+}
+.wrap img:hover {
+  opacity: 1.0;
 }
