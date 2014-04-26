@@ -1,0 +1,57 @@
+<html>
+<head>
+    <title>test</title>
+
+    <style type="text/css">
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        img {
+            width: 18%;
+            height: auto;
+            margin: 1%;
+        }
+    </style>
+
+    <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <script src="index.js"></script>
+    <script type="text/javascript">
+
+        function mkwrapper(url) {
+            var $inner = $("<div></div>");
+            var $h1 = $("<h1></h1>").html(url);
+
+            $("body").append($h1);
+            $("body").append($inner);
+            return $inner;
+        }
+
+        function inspect(url, cb) {
+            var $wrapper = mkwrapper(url);
+            autoindex(url, function(e, index) {
+                index.files.forEach(function(file) {
+                    var $img = $("<img />").attr('src', file.url);
+                    $wrapper.append($img);
+                });
+                cb();
+            });
+        }
+
+        $(function() {
+            inspect("http://i.johnweis.com/", function() {
+                inspect("http://localhost:8089/NBCU", function() {})
+            });
+        });
+        
+        
+    </script>
+</head>
+<body>
+
+
+
+</body>
+</html>

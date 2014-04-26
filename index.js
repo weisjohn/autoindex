@@ -3,75 +3,79 @@
 
 (function() {
 
-    var root = this;
+    var root = this, type;
 
-    function isDir(str) { return /alt\=\"\[DIR\]\"/.test(str); }
-    function isParent(str) { return /Parent Directory/.test(str); }
+    var apache = {
+        wrapper: /<table>(.+)<\/table>/g,
+        rows: /<a href=\"(.+)\">(.+)<\/a>.+(\d{2}\-[a-zA-Z]{3}-\d{4}\ \d{2}\:\d{2})\s+(\d{0,5})/g,
+        dir: /alt\=\"\[DIR\]\"/,
+        parent: /Parent Directory/,
+        root: /<h1>Index of \/<\/h1>/,
+    }
+
+    var nginx = {
+        wrapper: /<pre>(.+)<\/pre>/g,
+        rows: /<a href=\"(.+)\">(.+)<\/a>.+(\d{2}\-[a-zA-Z]{3}-\d{4}\ \d{2}\:\d{2})\s+(\d{0,5})/g,
+        dir: /href=\"(.*)\/\"/,
+        parent: /href="..\/">..\//,
+        root: /\<h1\>Index of \/<\/h1>/,
+    }
+
+    var types = { apache: apache, nginx: nginx };
+
+    function isDir(str) { return types[type].dir.test(str); }
+    function isParent(str) { return types[type].parent.test(str); }
+    function isRoot(page) { return types[type].root.test(page); }
 
     function autoindex(url, opts, cb) {
 
         // validation / options
         if (typeof url !== "string") return cb('URL must be a string');
-        var root = url.match(/^(.*\/\/[^\/?#]*).*$/)[1];
+        if (!/\/$/.test(url)) url += "/";
+        // TODO: what is this next line for? can we nix it?
+        // var root = url.match(/^(.*\/\/[^\/?#]*).*$/)[1];
         if (typeof opts === "function") cb = opts, opts = {};
 
-        // grab info out of a line
-        function objectify(str, should_console) {
-
-            var obj = {};
-            // find the href of the file
-            obj.href = str.match(/href\=\"([^\"]*)\"/m)[1];
-            obj.url = (url + obj.href).replace(/([^:])\/\//, "$1\/", "g").replace(/&amp;/g, "&");
-
-            // find the file name (preserve truncation)
-            obj.name = str.match(/<a href\=\"(?:[^\"]*)\">(.+)<\/a>/)[1];
-            obj.type = str.match(/alt\=\"\[(.*)\]\"/)[1].toLowerCase();
-            
-            // parent directory don't have a modified time
-            if (!isParent(str)) obj.modified = str.match(/\>(\d{2}-\w*-\d{4} \d{2}\:\d{2})/)[1];
-            if (obj.modified) obj.modified = new Date(obj.modified);
-
-            // directories don't have size
-            if (!isDir(str)) obj.size = str.match(/\>( *\d*\.*\d*[BKMGT])\</)[1].trim();
-
-            return obj;
-        }
-
-        // generic type sorter
-        function winnow(rows, parent, dir) {
-            return rows.filter(function(row) {
-                return (parent == isParent(row)) && (dir == isDir(row));
-            }).map(function(row) {
-                return objectify(row);
-            });
-        }
 
         function parser(opts, cb) {
             return function(page) {
                 if (typeof page === "undefined") return cb("No page");
 
-                // TODO: nix the whole rows then items thing, and just grab rows
-                var rows = page.match(/<tr>(.+)<\/tr>/g);
-                if (!rows) return cb("Malformed page, check the page, submit a bug?");
-                var items = rows.filter(function(row) {
-                    return /<td>(.+)<\/td>/.test(row);
-                });
+                // detect apache vs nginx
+                if (apache.rows.test(page)) {
+                    type = "apache";
+                } else {
+                    type = "nginx";
+                }
 
-                // discover if there's a parent or not
-                var parent = winnow(items, true, true);
-                parent = (parent.length) ? parent[0] : null;
+                var files = [], directories = [], parent;
+                page.replace(types[type].rows, function(row, href, name, date, size) {
 
-                var files = winnow(items, false, false);
+                    
+                    var obj = { href: href, name: name, date: date, size: size };
 
-                // TODO: filter only a type
-                if (opts.type) files = files.filter(function(file) {
-                    return file.type === opts.type;
+                    // create the url 
+                    obj.url = (url + obj.href).replace(/([^:])\/\//, "$1\/", "g").replace(/&amp;/g, "&");
+
+                    // convert the name property to be clean (no "/" at the end)
+                    obj.name = obj.name.replace(/\/$/, "");
+
+                    // change date to modified, delete data
+                    if (obj.date) { obj.modified = new Date(obj.date); delete obj.date; }
+                    
+                    // sort into the correct bin, special shortcut because we're in a .replace()
+                    if (!isDir(row)) { files.push(obj); return; }
+
+                    delete obj.size;
+                    if (!isParent(row)) { directories.push(obj); return; }
+                    parent = obj;
+                    
                 });
 
                 cb(null, {
-                    root: !parent,
+                    root: isRoot(page),
                     parent: parent,
-                    directories: winnow(items, false, true),
+                    directories: directories,
                     files: files
                 });
 
